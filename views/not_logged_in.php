@@ -1,0 +1,1035 @@
+
+<?php
+
+$servername = "ls-b53c0ae7c63e08f5187c48ef3a20b2501a6b6efb.c1aso2icslus.eu-west-2.rds.amazonaws.com";
+$username = "dbmasteruser";
+$password = ";#w34Ek89U!>Wc9IJ8:O`EUmuL&DqY8e";
+$database = "csx2";
+
+
+          
+$con = mysqli_connect($servername, $username, $password, $database);
+$result = mysqli_query($con,"SELECT count FROM likes2 WHERE ID = 1");
+$data = $result->fetch_all(MYSQLI_ASSOC);
+
+$result2 = mysqli_query($con,"SELECT views FROM likes2 WHERE ID = 1");
+$data2 = $result2->fetch_all(MYSQLI_ASSOC);
+
+$result3 = mysqli_query($con,"SELECT count FROM likes2 WHERE ID = 3");
+$data3 = $result3->fetch_all(MYSQLI_ASSOC);
+
+$result4 = mysqli_query($con,"SELECT views FROM likes2 WHERE ID = 3");
+$data4 = $result4->fetch_all(MYSQLI_ASSOC);
+
+?>
+<!DOCTYPE html>
+<html lang="en" data-theme="light"  data-sidebar-behaviour="fixed" data-navigation-color="inverted" data-is-fluid="true">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta content="Webinning" name="author">
+        
+            <!-- Theme CSS -->
+            <link rel="stylesheet" href="./assets/css/theme.bundle.css" id="stylesheetLTR">
+            <link rel="stylesheet" href="./assets/css/theme.rtl.bundle.css" id="stylesheetRTL">
+
+
+
+
+
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap">
+        <link rel="stylesheet" media="print" onload="this.onload=null;this.removeAttribute('media');" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap">
+        
+        <!-- no-JS fallback -->
+        <noscript>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap">
+        </noscript>
+
+
+        <style>
+            video {
+  max-width: 100%;
+  height: auto;
+}
+
+
+
+    body {
+            font-family: 'Inter', sans-serif;
+        }
+        .stream-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .video-feed {
+            width: 100%;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .start-stream {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+        .start-stream:hover {
+            background-color: #45a049;
+        }
+        .stop-stream {
+            background-color: #f44336; /* Red */
+            color: white;
+        }
+        .stop-stream:hover {
+            background-color: #d32f2f;
+        }
+        .record-stream {
+            background-color: #2196F3; /* Blue */
+            color: white;
+        }
+        .record-stream:hover {
+            background-color: #1976D2;
+        }
+        #stream-message {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #1e293b;
+        }
+        #video-container {
+            position: relative; /* Make sure the container is a positioning context */
+        }
+
+        #admin-video-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        #user-video-container {
+            margin-top: 2rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        #local-video {
+            width: 100%;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            display: block; /* Important for layout */
+            max-width: 640px; /* Limit the video size for admin view */
+            height: auto;
+        }
+
+        #remote-video {
+            /* Initially hide the remote video */
+            display: none;
+            position: relative;
+            top: 0;
+            left: 0;
+            max-width: 100%;  /* Occupy full width of container */
+            height: auto;
+            border: 2px solid #007bff;
+            border-radius: 0.5rem;
+            z-index: 10;
+            background-color: #000;
+            margin-bottom: 1rem;
+        }
+
+        #user-videos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center; /* Center the video elements */
+        }
+
+        .user-video-wrapper {
+            position: relative;
+            width: calc(50% - 1rem); /* 2 videos per row, minus gap */
+            max-width: 320px; /* Max width for each user video */
+            height: auto;
+        }
+
+        .user-video {
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background-color: #000;
+        }
+
+
+
+
+
+
+
+            </style>
+
+        
+        <script>
+         // Theme switcher
+        
+            let themeSwitcher = document.getElementById('themeSwitcher');
+        
+            const getPreferredTheme = () => {
+                if (localStorage.getItem('theme') != null) {
+                    return localStorage.getItem('theme');
+                }
+        
+                return document.documentElement.dataset.theme;
+            };
+        
+            const setTheme = function (theme) {
+                if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.dataset.theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                } else {
+                    document.documentElement.dataset.theme = theme;
+                }
+        
+                localStorage.setItem('theme', theme);
+            };
+        
+            const showActiveTheme = theme => {
+                const activeBtn = document.querySelector(`[data-theme-value="${theme}"]`);
+        
+                document.querySelectorAll('[data-theme-value]').forEach(element => {
+                    element.classList.remove('active');
+                });
+        
+                activeBtn && activeBtn.classList.add('active');
+        
+             // Set button if demo mode is enabled
+                document.querySelectorAll('[data-theme-control="theme"]').forEach(element => {
+                    if (element.value == theme) {
+                        element.checked = true;
+                    }
+                });
+            };
+        
+            function reloadPage() {
+                window.location = window.location.pathname;
+            }
+        
+        
+            setTheme(getPreferredTheme());
+        
+            if(typeof themeSwitcher != 'undefined') {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                    if(localStorage.getItem('theme') != null) {
+                        if (localStorage.getItem('theme') == 'auto') {
+                            reloadPage();
+                        }
+                    }
+                });
+        
+                window.addEventListener('load', () => {
+                    showActiveTheme(getPreferredTheme());
+                    
+                    document.querySelectorAll('[data-theme-value]').forEach(element => {
+                        element.addEventListener('click', () => {
+                            const theme = element.getAttribute('data-theme-value');
+        
+                            localStorage.setItem('theme', theme);
+                            reloadPage();
+                        })
+                    })
+                });
+            }
+        </script>
+        <!-- Favicon -->
+        <link rel="icon" href="./assets/favicon/favicon.ico" sizes="any">
+        
+            <!-- Demo script -->
+            <script>
+                var themeConfig = {
+                    theme: JSON.parse('"light"'),
+                    isRTL: JSON.parse('false'),
+                    isFluid: JSON.parse('true'),
+                    sidebarBehaviour: JSON.parse('"fixed"'),
+                    navigationColor: JSON.parse('"inverted"')
+                };
+                
+                var isRTL = localStorage.getItem('isRTL') === 'true',
+                    isFluid = localStorage.getItem('isFluid') === 'true',
+                    theme = localStorage.getItem('theme'),
+                    sidebarSizing = localStorage.getItem('sidebarSizing'),
+                    linkLTR = document.getElementById('stylesheetLTR'),
+                    linkRTL = document.getElementById('stylesheetRTL'),
+                    html = document.documentElement;
+        
+                if (isRTL) {
+                    linkLTR.setAttribute('disabled', '');
+                    linkRTL.removeAttribute('disabled');
+                    html.setAttribute('dir', 'rtl');
+                } else {
+                    linkRTL.setAttribute('disabled', '');
+                    linkLTR.removeAttribute('disabled');
+                    html.removeAttribute('dir');
+                }
+            </script>
+        
+        <!-- Page Title -->
+        <title>Dashboard | Dashly</title>
+    </head>
+    
+    <body>
+
+            <!-- THEME CONFIGURATION -->
+            <script>
+                let themeAttrs = document.documentElement.dataset;
+            
+                for(let attr in themeAttrs) {
+                    if(localStorage.getItem(attr) != null) {
+                        document.documentElement.dataset[attr] = localStorage.getItem(attr);
+            
+                        if (theme === 'auto') {
+                            document.documentElement.dataset.theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            
+                            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                                e.matches ? document.documentElement.dataset.theme = 'dark' : document.documentElement.dataset.theme = 'light';
+                            });
+                        }
+                    }
+                }
+            </script>
+        <!-- NAVIGATION -->
+        <nav id="mainNavbar" class="navbar navbar-vertical navbar-expand-lg scrollbar bg-dark navbar-dark">
+            
+            <!-- Theme configuration (navbar) -->
+                <script>
+                    let navigationColor = localStorage.getItem('navigationColor'),
+                        navbar = document.getElementById('mainNavbar');
+                
+                    if(navigationColor != null && navbar != null) {
+                        if(navigationColor == 'inverted') {
+                            navbar.classList.add('bg-dark', 'navbar-dark');
+                            navbar.classList.remove('bg-white', 'navbar-light');
+                        } else {
+                            navbar.classList.add('bg-white', 'navbar-light');
+                            navbar.classList.remove('bg-dark', 'navbar-dark');
+                        }
+                    }
+                </script>    
+            <div class="container-fluid">
+                
+                <!-- Brand -->
+                <div class="navbar-brand" style="color:gold;" href="/index.php">
+              <!--      <img src="/assets/images/logo-small.svg" class="navbar-brand-img logo-light logo-small" alt="..." width="19" height="25">
+                    <img src="/assets/images/logo.svg" class="navbar-brand-img logo-light logo-large" alt="..." width="125" height="25">
+        
+                    <img src="/assets/images/logo-dark-small.svg" class="navbar-brand-img logo-dark logo-small" alt="..." width="19" height="25">
+                    <img src="/assets/images/logo-dark.svg" class="navbar-brand-img logo-dark logo-large" alt="..." width="125" height="25">
+                -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-fire" viewBox="0 0 16 16">
+            <path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15"/>
+          </svg>&nbsp<strong>ComputerScienceX.com</strong>
+
+                </div>
+        
+                <!-- Navbar toggler -->
+                <a href="javascript: void(0);" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#sidenavCollapse" aria-controls="sidenavCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </a>
+        
+                <!-- Collapse -->
+                <div class="collapse navbar-collapse" id="sidenavCollapse">
+        
+                    <!-- Navigation -->
+                    <ul class="navbar-nav mb-lg-7">
+        
+        
+                        <li class="nav-item">
+                            <a href="/pages/free-content.php" class="nav-link">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="nav-link-icon" height="18" width="18"><path d="M22.627 14.87 15 22.5l-3.75.75.75-3.75 7.631-7.63a2.113 2.113 0 0 1 2.991 0l.009.008a2.116 2.116 0 0 1-.004 2.992zM8.246 20.25h-6a1.5 1.5 0 0 1-1.5-1.5V2.25a1.5 1.5 0 0 1 1.5-1.5h15a1.5 1.5 0 0 1 1.5 1.5V9m-10.5-3.75h6m-9 4.5h9m-9 4.5h7.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+                                <span>FREE CONTENT</span>
+                                <span class="badge text-bg-success rounded-pill ms-auto">FREE</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/pages/paid-content.php" class="nav-link">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="nav-link-icon" height="18" width="18"><path d="M22.627 14.87 15 22.5l-3.75.75.75-3.75 7.631-7.63a2.113 2.113 0 0 1 2.991 0l.009.008a2.116 2.116 0 0 1-.004 2.992zM8.246 20.25h-6a1.5 1.5 0 0 1-1.5-1.5V2.25a1.5 1.5 0 0 1 1.5-1.5h15a1.5 1.5 0 0 1 1.5 1.5V9m-10.5-3.75h6m-9 4.5h9m-9 4.5h7.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+                                <span>PREMIUM CONTENT</span>
+                                <span class="badge text-bg-info rounded-pill ms-auto">PREMIUM</span>
+                            </a>
+                        </li>
+        
+        
+                    </ul>
+                    <!-- End of Navigation -->
+        
+                    <div class="help-box rounded-3 py-5 px-4 text-center mt-auto">
+                        <img src="/assets/images/illustrations/upgrade-illustration.svg" alt="..." class="img-fluid mb-4" width="160" height="160">    
+                        <h6>Upgrade to explore<br> <span class="emphasize">premium</span> features</h6>
+                        
+                        <!-- Button -->
+                        <a class="btn w-100 btn-sm btn-primary" href="/premium.php">Upgrade to Premium</a>
+                    </div>
+                </div>
+                <!-- End of Collapse -->
+            </div>
+        </nav>
+        <!-- MAIN CONTENT -->
+        <main>
+
+            <!-- HEADER -->
+            <header class="container-fluid d-flex py-6 mb-4">
+            
+            
+                <!-- Top buttons -->
+                <div class="d-flex align-items-center ms-auto me-n1 me-lg-n2">
+            
+                    <!-- Dropdown -->
+                    <div class="dropdown" id="themeSwitcher">
+                        <a href="javascript: void(0);" class="dropdown-toggle no-arrow d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm mx-1 mx-lg-2 w-40px h-40px link-secondary" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bs-offset="0,0">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="18" width="18"><g><path d="M12,4.64A7.36,7.36,0,1,0,19.36,12,7.37,7.37,0,0,0,12,4.64Zm0,12.72A5.36,5.36,0,1,1,17.36,12,5.37,5.37,0,0,1,12,17.36Z" style="fill: currentColor"/><path d="M12,3.47a1,1,0,0,0,1-1V1a1,1,0,0,0-2,0V2.47A1,1,0,0,0,12,3.47Z" style="fill: currentColor"/><path d="M4.55,6a1,1,0,0,0,.71.29A1,1,0,0,0,6,6,1,1,0,0,0,6,4.55l-1-1A1,1,0,0,0,3.51,4.93Z" style="fill: currentColor"/><path d="M2.47,11H1a1,1,0,0,0,0,2H2.47a1,1,0,1,0,0-2Z" style="fill: currentColor"/><path d="M4.55,18l-1,1a1,1,0,0,0,0,1.42,1,1,0,0,0,.71.29,1,1,0,0,0,.71-.29l1-1A1,1,0,0,0,4.55,18Z" style="fill: currentColor"/><path d="M12,20.53a1,1,0,0,0-1,1V23a1,1,0,0,0,2,0V21.53A1,1,0,0,0,12,20.53Z" style="fill: currentColor"/><path d="M19.45,18A1,1,0,0,0,18,19.45l1,1a1,1,0,0,0,.71.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.42Z" style="fill: currentColor"/><path d="M23,11H21.53a1,1,0,0,0,0,2H23a1,1,0,0,0,0-2Z" style="fill: currentColor"/><path d="M18.74,6.26A1,1,0,0,0,19.45,6l1-1a1,1,0,1,0-1.42-1.42l-1,1A1,1,0,0,0,18,6,1,1,0,0,0,18.74,6.26Z" style="fill: currentColor"/></g></svg>
+                        </a>
+            
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <button type="button" class="dropdown-item active" data-theme-value="light">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="me-2" height="18" width="18"><g><path d="M12,4.64A7.36,7.36,0,1,0,19.36,12,7.37,7.37,0,0,0,12,4.64Zm0,12.72A5.36,5.36,0,1,1,17.36,12,5.37,5.37,0,0,1,12,17.36Z" style="fill: currentColor"/><path d="M12,3.47a1,1,0,0,0,1-1V1a1,1,0,0,0-2,0V2.47A1,1,0,0,0,12,3.47Z" style="fill: currentColor"/><path d="M4.55,6a1,1,0,0,0,.71.29A1,1,0,0,0,6,6,1,1,0,0,0,6,4.55l-1-1A1,1,0,0,0,3.51,4.93Z" style="fill: currentColor"/><path d="M2.47,11H1a1,1,0,0,0,0,2H2.47a1,1,0,1,0,0-2Z" style="fill: currentColor"/><path d="M4.55,18l-1,1a1,1,0,0,0,0,1.42,1,1,0,0,0,.71.29,1,1,0,0,0,.71-.29l1-1A1,1,0,0,0,4.55,18Z" style="fill: currentColor"/><path d="M12,20.53a1,1,0,0,0-1,1V23a1,1,0,0,0,2,0V21.53A1,1,0,0,0,12,20.53Z" style="fill: currentColor"/><path d="M19.45,18A1,1,0,0,0,18,19.45l1,1a1,1,0,0,0,.71.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.42Z" style="fill: currentColor"/><path d="M23,11H21.53a1,1,0,0,0,0,2H23a1,1,0,0,0,0-2Z" style="fill: currentColor"/><path d="M18.74,6.26A1,1,0,0,0,19.45,6l1-1a1,1,0,1,0-1.42-1.42l-1,1A1,1,0,0,0,18,6,1,1,0,0,0,18.74,6.26Z" style="fill: currentColor"/></g></svg>
+                                    Light mode
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item" data-theme-value="dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="me-2" height="18" width="18"><path d="M19.57,23.34a1,1,0,0,0,0-1.9,9.94,9.94,0,0,1,0-18.88,1,1,0,0,0,.68-.94,1,1,0,0,0-.68-.95A11.58,11.58,0,0,0,8.88,2.18,12.33,12.33,0,0,0,3.75,12a12.31,12.31,0,0,0,5.11,9.79A11.49,11.49,0,0,0,15.61,24,12.55,12.55,0,0,0,19.57,23.34ZM10,20.17A10.29,10.29,0,0,1,5.75,12a10.32,10.32,0,0,1,4.3-8.19A9.34,9.34,0,0,1,15.59,2a.17.17,0,0,1,.17.13.18.18,0,0,1-.07.2,11.94,11.94,0,0,0-.18,19.21.25.25,0,0,1-.16.45A9.5,9.5,0,0,1,10,20.17Z" style="fill: currentColor"/></svg>
+                                    Dark mode
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item" data-theme-value="auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="me-2" height="18" width="18"><path d="M24,12a1,1,0,0,0-1-1H19.09a.51.51,0,0,1-.49-.4,6.83,6.83,0,0,0-.94-2.28.5.5,0,0,1,.06-.63l2.77-2.76a1,1,0,1,0-1.42-1.42L16.31,6.28a.5.5,0,0,1-.63.06A6.83,6.83,0,0,0,13.4,5.4a.5.5,0,0,1-.4-.49V1a1,1,0,0,0-2,0V4.91a.51.51,0,0,1-.4.49,6.83,6.83,0,0,0-2.28.94.5.5,0,0,1-.63-.06L4.93,3.51A1,1,0,0,0,3.51,4.93L6.28,7.69a.5.5,0,0,1,.06.63A6.83,6.83,0,0,0,5.4,10.6a.5.5,0,0,1-.49.4H1a1,1,0,0,0,0,2H4.91a.51.51,0,0,1,.49.4,6.83,6.83,0,0,0,.94,2.28.5.5,0,0,1-.06.63L3.51,19.07a1,1,0,1,0,1.42,1.42l2.76-2.77a.5.5,0,0,1,.63-.06,6.83,6.83,0,0,0,2.28.94.5.5,0,0,1,.4.49V23a1,1,0,0,0,2,0V19.09a.51.51,0,0,1,.4-.49,6.83,6.83,0,0,0,2.28-.94.5.5,0,0,1,.63.06l2.76,2.77a1,1,0,1,0,1.42-1.42l-2.77-2.76a.5.5,0,0,1-.06-.63,6.83,6.83,0,0,0,.94-2.28.5.5,0,0,1,.49-.4H23A1,1,0,0,0,24,12Zm-8.74,2.5A5.76,5.76,0,0,1,9.5,8.74a5.66,5.66,0,0,1,.16-1.31A.49.49,0,0,1,10,7.07a5.36,5.36,0,0,1,1.8-.31,5.47,5.47,0,0,1,5.46,5.46,5.36,5.36,0,0,1-.31,1.8.49.49,0,0,1-.35.32A5.53,5.53,0,0,1,15.26,14.5Z" style="fill: currentColor"/></svg>
+                                    Auto
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+            
+                    <!-- Separator -->
+                    <div class="vr bg-gray-700 mx-2 mx-lg-3"></div>
+            
+            
+            
+                    <!-- Dropdown -->
+                    <div class="dropdown">
+                        <a href="javascript: void(0);" class="dropdown-toggle no-arrow d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm mx-1 mx-lg-2 w-40px h-40px" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false" data-bs-offset="0,0">
+                            <div class="avatar avatar-circle avatar-sm">
+                            <span class="avatar-title text-bg-primary-soft"><?php echo mb_substr($_SESSION['user_name'], 0, 1); ?></span>
+                            </div>
+                        </a>
+
+
+
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item-text">
+                                <div class="d-flex align-items-center">
+
+                                    <div class="flex-grow-1 ms-3">
+                                        <h4 class="mb-0" style="font-size:18px;"><?php echo $_SESSION['user_name']; ?></h4>
+                                        <p class="card-text" style="color:green;font-size:18px;"><?php if ($_SESSION['premium_status'] == 1){
+                            echo "PREMIUM";
+                        }else {
+                            echo "FREE" ;
+                            echo '<div class="help-box rounded-3 py-5 px-4 text-center mt-auto">
+                            <h6>Upgrade to explore<br> <span class="emphasize">premium</span> features</h6>
+                            
+                            <!-- Button -->
+                            <a class="btn w-100 btn-sm btn-primary" href="/premium.php">Upgrade to Premium</a>
+                        </div>';
+                        } ?></p>
+                                    </div>
+                                </div>
+                            </div>
+            
+            
+            
+                            <hr class="dropdown-divider">
+            
+            
+                            <a class="dropdown-item" href="index.php?logout">Sign out</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="container-fluid">
+
+
+
+                    <?php if ($_SESSION['user_login_status'] !== 1){
+                        
+                            echo '<div class="card">
+                            <div class="card-body">
+                        
+                                          <!-- Title -->
+                                          <h1 class="mb-2 text-center">
+                                                Sign In
+                                            </h1>
+                        
+                                            <!-- Subtitle -->
+                                            <p class="text-secondary text-center">
+                                                Enter your email address and password or sign up
+                                            </p>
+                                            <p class="text-secondary text-center">
+                                                THIS IS A SAMPLE PHP/MYSQL WEB APPLICATION I CREATED, WITH PREMIUM(PAID) SECTION
+                                            </p>
+                                            <p class="text-secondary text-center">
+                                                YOU CAN CREATE AN ACCOUNT WITH A FAKE EMAIL TO TEST 
+                                            </p>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                                            <!-- Form -->
+                                            <form method="post" action="index.php" name="loginform">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="mb-4">
+                        
+                        
+                                                            <!-- Label -->
+                                                            <label class="form-label" for="login_input_username">Username</label>
+                        
+                            
+                                                            <!-- Input -->
+                                                            <input class="form-control" placeholder="Your username" id="login_input_username" type="text" name="user_name" required >
+                                                        </div>
+                                                    </div>
+                        
+                                                    <div class="col-12">
+                                                        <!-- Password -->
+                                                        <div class="mb-4">
+                        
+                                                            <div class="row">
+                                                                <div class="col">
+                        
+                                                                    <!-- Label -->
+                                                                    <label class="form-label" for="login_input_password">
+                                                                        Password
+                                                                    </label>
+                                                                </div>
+                        
+                                                            </div> <!-- / .row -->
+                            
+                                                            <!-- Input -->
+                                                            <div class="input-group input-group-merge">
+                                                                <input type="password" class="form-control" autocomplete="off" data-toggle-password-input placeholder="Your password" id="login_input_password"  name="user_password" required >
+                                                                
+                                                                <button type="button" class="input-group-text px-4 text-secondary link-primary" data-toggle-password></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div> <!-- / .row -->
+                        
+                        
+                                                <div class="row align-items-center text-center">
+                                                    <div class="col-12">
+                        
+                                                        <!-- Button -->
+                                                        <button type="submit" class="btn w-100 btn-primary mt-6 mb-2" name="login" value="Log in" >Sign in</button>
+                                                    </div>
+                        
+                                                    <div class="col-12">
+                                                    <a href="register.php">Register new account</a>
+                                                        <!-- Link -->
+                                                        <small class="mb-0 text-body-secondary">Dont have an account yet? <a href="register.php" class="fw-semibold">Sign up</a></small>
+                                                    </div>
+                                                </div> <!-- / .row -->
+                                            </form>
+                        
+                                            </div>
+                                            </div>';
+                        } ?>      
+           
+
+
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+
+
+<div class="col">
+<a href="/pages/free-content.php">
+
+  <div class="card">
+    <img src="/assets/images/backgrounds/background-01.jpeg" class="card-img-top" alt="...">
+    <div class="card-body">
+    <div class="float-end">  
+
+<small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">FREE</small>
+
+
+
+        </div>
+    
+       <!--<div style="font-size:20px;">--> <h2><span class="badge rounded-pill text-bg-primary"><?php foreach($data2 as $row): ?>
+      <?= htmlspecialchars($row['views']) ?>
+    <?php endforeach ?>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+</svg></span>
+
+<span class="badge rounded-pill text-bg-primary"><?php foreach($data as $row): ?>
+      <?= htmlspecialchars($row['count']) ?>
+    <?php endforeach ?>  
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="color:red;" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
+  <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1"/>
+</svg></span></h2>
+      <h3 class="card-title">Card title</h5>
+
+      <p style="font-size:16px;"class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    </div>
+  </div>
+                  </a>
+</div>
+
+
+<div class="col">
+<a href="/pages/free-content.php">
+
+  <div class="card">
+    <img src="/assets/images/backgrounds/background-01.jpeg" class="card-img-top" alt="...">
+    <div class="card-body">
+    <div class="float-end">    
+    <small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">FREE</small>
+
+
+
+        </div>
+    
+       <!--<div style="font-size:20px;">--> <h2><span class="badge rounded-pill text-bg-primary"><?php foreach($data2 as $row): ?>
+        <?= htmlspecialchars($row['views']) ?>
+    <?php endforeach ?>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+</svg></span>
+
+<span class="badge rounded-pill text-bg-primary"><?php foreach($data as $row): ?>
+      <?= htmlspecialchars($row['count']) ?>
+    <?php endforeach ?>  
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="color:red;" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
+  <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1"/>
+</svg></span></h2>
+      <h3 class="card-title">Card title</h5>
+
+      <p style="font-size:16px;"class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    </div>
+  </div>
+                  </a>
+</div>
+
+
+<div class="col">
+<a href="/pages/paid-content.php">
+
+  <div class="card border-danger">
+    <img src="/assets/images/backgrounds/background-01.jpeg" class="card-img-top" alt="...">
+    <div class="card-body">
+    <div class="float-end">    
+
+    <small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">PREMIUM</small>
+
+
+
+        </div>
+    
+
+
+       <!--<div style="font-size:20px;">--> <h2><span class="badge rounded-pill text-bg-primary"><?php foreach($data4 as $row): ?>
+      <?= htmlspecialchars($row['views']) ?>
+    <?php endforeach ?>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+</svg></span>
+
+<span class="badge rounded-pill text-bg-primary"><?php foreach($data3 as $row): ?>
+      <?= htmlspecialchars($row['count']) ?>
+    <?php endforeach ?>  
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="color:red;" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
+  <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1"/>
+</svg></span></h2>
+      <h3 class="card-title">Card title</h5>
+      <p style="font-size:16px;" class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+    </div>
+  </div>
+                  </a>
+</div>
+
+
+<div class="col">
+<a href="/pages/paid-content.php">
+
+  <div class="card border-danger">
+    <img src="/assets/images/backgrounds/background-01.jpeg" class="card-img-top" alt="...">
+    <div class="card-body">
+    <div class="float-end">    
+
+    <small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">PREMIUM</small>
+
+
+
+        </div>
+    
+       <!--<div style="font-size:20px;">--> <h2><span class="badge rounded-pill text-bg-primary"><?php foreach($data4 as $row): ?>
+      <?= htmlspecialchars($row['views']) ?>
+    <?php endforeach ?>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+</svg></span>
+
+<span class="badge rounded-pill text-bg-primary"><?php foreach($data3 as $row): ?>
+      <?= htmlspecialchars($row['count']) ?>
+    <?php endforeach ?>  
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="color:red;" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
+  <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1"/>
+</svg></span></h2>
+      <h3 class="card-title">Card title</h5>
+      <p style="font-size:16px;" class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    </div>
+  </div>
+                  </a>
+</div>
+</div>
+
+<h2>JavaScript Geolocation API</h2>
+<p>Click the button to get your coordinates.</p>
+
+<button onclick="getLocation()">Try It</button>
+
+<p id="demo"></p>
+
+
+<script>
+const x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+}
+
+</script>
+
+
+
+
+
+            </div> <!-- / .container-fluid -->
+
+            <!-- Footer-->
+            <!-- Footer -->
+            <footer class="mt-auto">
+                <div class="container-fluid mt-4 mb-6 text-body-secondary">
+                    <div class="row justify-content-between">
+                        <div class="col">
+                            © Dashly. 2025 Webinning.
+                        </div>
+            
+                        <div class="col-auto">
+                            v1.6.0
+                        </div>
+                    </div> <!-- / .row -->
+                </div>
+            </footer>
+            
+
+            
+        </main> <!-- / main -->
+
+        <!-- JAVASCRIPT-->
+        <!-- Theme JS -->
+        <script src="/assets/js/theme.bundle.js"></script>    
+
+    <script>
+    const localVideo = document.getElementById('local-video');
+    const remoteVideo = document.getElementById('remote-video');
+    const startStreamButton = document.getElementById('start-stream');
+    const stopStreamButton = document.getElementById('stop-stream');
+    const recordStreamButton = document.getElementById('record-stream');
+    const stopRecordButton = document.getElementById('stop-record');
+    const streamMessage = document.getElementById('stream-message');
+    const recordingStatus = document.getElementById('recording-status');
+    const adminVideoContainer = document.getElementById('admin-video-container');
+    const userVideoContainer = document.getElementById('user-video-container');
+    const userVideosContainer = document.getElementById('user-videos');
+
+
+    let mediaRecorder;
+    let recordedChunks = [];
+    let streamActive = false;
+    let isRecording = false;
+    let peerConnection; // Declare peerConnection globally
+    let localStream; // Declare localStream globally
+    let remoteStreams = new Map(); // Store remote streams
+
+
+    const servers = {
+        iceServers: [
+            {
+                urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302']
+            }
+        ]
+    };
+
+    startStreamButton.addEventListener('click', startStream);
+    stopStreamButton.addEventListener('click', stopStream);
+    recordStreamButton.addEventListener('click', startRecording);
+    stopRecordButton.addEventListener('click', stopRecording);
+
+
+    async function startStream() {
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            localVideo.srcObject = localStream;
+            streamActive = true;
+            startStreamButton.disabled = false;
+            stopStreamButton.disabled = false;
+            recordStreamButton.disabled = false;
+            streamMessage.textContent = 'আপনি এখন সম্প্রচার করছেন!';
+            await startP2PConnection();
+        } catch (error) {
+            console.error('Error starting stream:', error);
+            streamMessage.textContent = 'ক্যামেরা এবং মাইক্রোফোন অ্যাক্সেস করতে সমস্যা হয়েছে।';
+        }
+    }
+
+    async function stopStream() {
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localVideo.srcObject = null;
+        }
+        streamActive = false;
+        startStreamButton.disabled = false;
+        stopStreamButton.disabled = true;
+        recordStreamButton.disabled = true;
+        streamMessage.textContent = 'সম্প্রচার শেষ হয়েছে।';
+        if (peerConnection) {
+            peerConnection.close();
+            peerConnection = null;
+        }
+        remoteStreams.forEach(stream => {
+            stream.getTracks().forEach(track => track.stop());
+        });
+        remoteStreams.clear();
+        userVideosContainer.innerHTML = ''; // Clear all remote video elements
+        if (isRecording) {
+             stopRecording();
+        }
+
+    }
+
+    function startRecording() {
+        if (!streamActive) {
+            streamMessage.textContent = 'রেকর্ডিং শুরু করার আগে সম্প্রচার শুরু করুন।';
+            return;
+        }
+
+        if (isRecording) return;
+
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(localStream, { mimeType: 'video/webm;codecs=vp9' });
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'stream_recording.webm';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            recordedChunks = [];
+            recordingStatus.textContent = 'রেকর্ডিং শেষ হয়েছে।';
+            isRecording = false;
+            recordStreamButton.disabled = false;
+            stopRecordButton.disabled = true;
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        recordingStatus.textContent = 'রেকর্ডিং চলছে...';
+        recordStreamButton.disabled = true;
+        stopRecordButton.disabled = false;
+    }
+
+    function stopRecording() {
+        if (isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+            recordingStatus.textContent = 'রেকর্ডিং বন্ধ করা হচ্ছে...';
+            recordStreamButton.disabled = false;
+            stopRecordButton.disabled = true;
+        }
+    }
+
+
+    async function startP2PConnection() {
+        peerConnection = new RTCPeerConnection(servers);
+
+        peerConnection.onicecandidate = event => {
+            if (event.candidate) {
+                console.log('Sending ICE candidate:', event.candidate);
+                // Simulate sending to a "remote" peer
+                setTimeout(() => {
+                    if (peerConnection) {
+                         addCandidateToPeer(event.candidate, peerConnection);
+                    }
+                }, 1000);
+            }
+        };
+
+        peerConnection.ontrack = event => {
+           // Handle multiple remote streams.
+            const stream = event.streams[0];
+            if (!remoteStreams.has(stream.id)) {
+                remoteStreams.set(stream.id, stream);
+
+                const userVideoWrapper = document.createElement('div');
+                userVideoWrapper.className = 'user-video-wrapper';
+                const remoteVideoElement = document.createElement('video');
+                remoteVideoElement.className = 'user-video';
+                remoteVideoElement.autoplay = true;
+                remoteVideoElement.playsinline = true;
+                remoteVideoElement.srcObject = stream;
+                userVideoWrapper.appendChild(remoteVideoElement);
+                userVideosContainer.appendChild(userVideoWrapper);
+
+            }
+        };
+
+        localStream.getTracks().forEach(track => {
+            peerConnection.addTrack(track, localStream);
+        });
+
+        try {
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            console.log('Sending offer:', offer);
+            setTimeout(() => {
+                createAnswer(offer);
+            }, 2000);
+        } catch (error) {
+            console.error('Error creating offer:', error);
+        }
+    }
+
+    async function createAnswer(offer) {
+        try {
+            if (!peerConnection) {
+                  peerConnection = new RTCPeerConnection(servers);
+                  peerConnection.ontrack = event => {
+                      const stream = event.streams[0];
+                      if (!remoteStreams.has(stream.id)) {
+                          remoteStreams.set(stream.id, stream);
+                          const userVideoWrapper = document.createElement('div');
+                          userVideoWrapper.className = 'user-video-wrapper';
+                          const remoteVideoElement = document.createElement('video');
+                          remoteVideoElement.className = 'user-video';
+                          remoteVideoElement.autoplay = true;
+                          remoteVideoElement.playsinline = true;
+                          remoteVideoElement.srcObject = stream;
+                          userVideoWrapper.appendChild(remoteVideoElement);
+                          userVideosContainer.appendChild(userVideoWrapper);
+                      }
+                  };
+            }
+            await peerConnection.setRemoteDescription(offer);
+            await peerConnection.setLocalDescription(await peerConnection.createAnswer());
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+            setTimeout(() => {
+                if (peerConnection) {
+                  processAnswer(peerConnection.localDescription);
+                }
+            }, 1500);
+        } catch (error) {
+            console.error('Error creating answer:', error);
+        }
+    }
+
+    async function processAnswer(answer) {
+        try {
+            if (!peerConnection) {
+                console.error("processAnswer: peerConnection is null");
+                return;
+            }
+            await peerConnection.setRemoteDescription(answer);
+            console.log('Answer processed:', answer);
+        } catch (error) {
+            console.error('Error processing answer:', error);
+        }
+    }
+
+     async function addCandidateToPeer(candidate, pc) {
+        try {
+            if (pc.connectionState !== 'closed') {
+              await pc.addIceCandidate(candidate);
+              console.log('ICE candidate added:', candidate);
+            } else {
+               console.warn("addCandidateToPeer: Peer connection is closed, not adding candidate", candidate);
+            }
+
+        } catch (error) {
+            console.error('Error adding ICE candidate:', error);
+        }
+    }
+
+    </script>
+    </body>
+</html>
