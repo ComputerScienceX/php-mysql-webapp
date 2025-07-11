@@ -1,3 +1,6 @@
+THIS IS A VERY MESSY PIECE OF SOFTWARE. BUT ITS A GOOD LESSON ON INTEGRATING A PHP LOGIN SYSTEM WITH BOOTSTRAP 5 THEMES
+I HAVENT TAKEN THE TIME TO CLEAN THIS CODE. THE LIVESTREAMING DOESNT WORK I WAS JUST TESTING IT OUT AND FORGOT TO DELETE SOME FILES
+
 # php-login-minimal
 
 A simple, but secure PHP login script. Uses the ultra-modern & future-proof PHP 5.5 BLOWFISH hashing/salting functions (includes the official PHP 5.3 & PHP 5.4 compatibility pack, which makes those functions available in these versions too). 
